@@ -1,0 +1,6 @@
+# mamy 2 inwestorów: 1x RANDOM, 1x SMA
+R S
+# 1 rodzaje akcji w obrocie wraz z cenami ostatnich transakcji
+CDR:135
+# początkowy stan portfeli (identyczny dla wszystkich inwestorów)
+0 CDR:69420

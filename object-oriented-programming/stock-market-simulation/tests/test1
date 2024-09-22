@@ -1,0 +1,6 @@
+# mamy 14 inwestorów: 8x RANDOM, 6x SMA
+R R R R S S R R S S R R S S
+# 5 rodzaje akcji w obrocie wraz z cenami ostatnich transakcji
+MBR:311 KRU:441 XTB:66 PCO:23 TXT:79
+# początkowy stan portfeli (identyczny dla wszystkich inwestorów)
+10000 MBR:10 KRU:15 XTB:220 PCO:1000 TXT:64

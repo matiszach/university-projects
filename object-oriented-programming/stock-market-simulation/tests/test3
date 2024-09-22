@@ -1,0 +1,6 @@
+# mamy 6 inwestorów: 0x RANDOM, 6x SMA
+S S S S S S
+# 3 rodzaje akcji w obrocie wraz z cenami ostatnich transakcji
+11B:630 MBK:550 BDX:710
+# początkowy stan portfeli (identyczny dla wszystkich inwestorów)
+101010 11B:640 MBK:202 BDX:50
