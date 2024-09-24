@@ -53,5 +53,5 @@ Use JetBrains IntelliJ IDEA (or any preffered Java build tool/system) to build t
 
 Run Main with 2 arguments; first being input file's name and second number of turns of simulation.
 ```
-java Main example.txt 1000
+java Main ../example.txt 1000
 ```
