@@ -1,1 +1,3 @@
-# stock-market-simulation
+# Stock Market Simulation
+
+## Description

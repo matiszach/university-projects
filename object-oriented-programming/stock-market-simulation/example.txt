@@ -1,0 +1,6 @@
+# We have 6 investors: 4x RANDOM, 2x SMA
+R R R R S S R R S S R R S S
+# 3 types of stocks available with their last transaction prices
+APL:145 MSFT:300 GOOGL:2700
+# initial state of an investor's portfolio (identical for every investor)
+5000 APL:5 MSFT:15 GOOGL:3
