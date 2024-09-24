@@ -39,7 +39,7 @@ There's an example.txt provided which is an example input file.
 
 ## Usage
 
-Download project folder.
+Download the project folder.
 ```
 git clone --no-checkout https://github.com/matiszach/university-projects.git
 cd university-projects
@@ -50,7 +50,7 @@ cd object-oriented-programming/stock-market-simulation
 ```
 
 Run the code.
-Main takes into 2 arguments first being input file name and second number of turns of simulation.
+Main takes into 2 arguments; first being input file name and second number of turns of simulation.
 ```
 javac Main.java
 java Main example.txt 1000
