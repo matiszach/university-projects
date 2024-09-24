@@ -35,7 +35,7 @@ First number specifies the initial amount of money, and then the list of the ins
 
 Everything that comes after **#** symbol in its line is ignored so it can be used for comments.
 
-There's an example.txt provided which is an example input file.
+There's an example.txt provided which is an example input file and sample tests in **tests** folder.
 
 ## Usage
 
@@ -49,9 +49,9 @@ git checkout
 cd object-oriented-programming/stock-market-simulation
 ```
 
-Run the code.
-Main takes into 2 arguments; first being input file name and second number of turns of simulation.
+Use JetBrains IntelliJ IDEA (or any preffered Java build tool/system) to build the project.
+
+Run Main with 2 arguments; first being input file's name and second number of turns of simulation.
 ```
-javac Main.java
 java Main example.txt 1000
 ```
