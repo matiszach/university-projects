@@ -12,7 +12,8 @@ The Project is fully following the OOP principles such as Polymorphism, Inherita
 
 ## Input
 
-First line of input consists of letters identifying the investment strategies used by each of the investors participating in the market (R - Random, S - SMA)
+First line of input consists of letters identifying the investment strategies used by each of the investors participating in the market (R - Random, S - SMA).
+
 That's how to add 5 investors, where 1st, 3rd and 4th follow Random stategy whereas 2nd and 5th follow SMA stategy.
 ```
 R S R R S
