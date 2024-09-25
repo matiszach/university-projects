@@ -47,3 +47,19 @@ The library provides following functions:
 - Returns:
   - A pointer to the `NAND` gate connected to the output of `g`.
   - The result is undefined if the parameters are incorrect.
+
+# Usage
+
+To build the library, simply use the provided MakeFile
+```
+make all
+```
+or
+```
+make libnand.so
+```
+to build the library.
+```
+make clean
+```
+to clean up all the generated files.
