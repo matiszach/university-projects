@@ -50,7 +50,7 @@ The library provides following functions:
 
 # Usage
 
-To build the library, simply use the provided MakeFile
+To build the library, simply use the provided `Makefile`:
 ```
 make all
 ```
@@ -58,8 +58,11 @@ or
 ```
 make libnand.so
 ```
-to build the library.
+And to clean up:
 ```
 make clean
 ```
-to clean up all the generated files.
+
+# Warning
+
+The library uses system specific functions and works only on `Linux`.
