@@ -24,3 +24,22 @@ The checksum is calculated using the **Cyclic Redundancy Check (CRC)** algorithm
 ### Optimization
 
 The program utilizes a buffer for more efficient data processing.
+
+## Usage
+
+Compile the program.
+```
+nasm -f elf64 -w+all -w+error -o crc.o crc.asm
+ld --fatal-warnings -o crc crc.o
+```
+
+Run the program. The program takes 2 arguments; the input file's name and the CRC polynomial.
+```
+./crc file crc_poly
+```
+
+- **file**: The name of the file to be processed.
+- **crc_poly**: A binary string representing the CRC polynomial. The highest-order coefficient is omitted, and the maximum degree of the CRC polynomial is 64 (resulting in a maximum CRC divisor length of 65 bits). 
+  - For example, `11010101` represents the polynomial: 𝑥⁸ + 𝑥⁷ + 𝑥⁶ + 𝑥⁴ + 𝑥² + 1.
+  - Constant polynomials are considered invalid.
+
