@@ -1,5 +1,9 @@
 # NAND Gates Circuit DLL
 
+## Warning
+
+The Project uses system-specific functionalities and works only on `Linux`.
+
 ## Description
 
 This project is a dynamically loaded C library that implements the functionality of creating logic circuits with NAND gates.
@@ -63,7 +67,3 @@ And to clean up:
 ```
 make clean
 ```
-
-## Warning
-
-The library uses system-specific functionalities and works only on `Linux`.
