@@ -59,10 +59,7 @@ To build the library, simply use the provided `Makefile`:
 ```
 make all
 ```
-or
-```
-make libnand.so
-```
+
 And to clean up:
 ```
 make clean
