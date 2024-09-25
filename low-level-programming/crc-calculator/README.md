@@ -4,6 +4,19 @@
 
 This project is an assembly program which calculates the [CRC](https://en.wikipedia.org/wiki/Cyclic_redundancy_check) checksum for the given input file and CRC polynomial.
 
-This program computes the CRC checksum of a Linux file, which may contain sparse regions ("holes"). A sparse file consists of continuous segments, where each segment begins with a 2-byte length field, followed by the data. The segment ends with a 4-byte offset indicating how far to move to reach the next segment. The length is a 16-bit unsigned integer in little-endian format, and the offset is a 32-bit two's complement number. The first segment starts at the file's beginning, and the last segment is identified when its offset points to itself.
+This program calculates the CRC checksum of a sparse Linux file. Sparse files are files that can contain "holes" (empty regions) and are organized into continuous segments.
 
-The program processes each byte in these segments using the provided CRC polynomial to calculate the file's checksum, with the most significant bits of both the data and the CRC polynomial aligned to the left.
+Each segment in the file consists of:
+- **2-byte length**: The length of the data in the segment.
+- **Data**: The actual file data for the segment.
+- **4-byte offset**: Indicates how many bytes to skip from the end of the current segment to the start of the next.
+
+### Important Details:
+- The length field is a 16-bit unsigned integer in little-endian format.
+- The offset is a 32-bit signed integer (two's complement) in little-endian format.
+- The first segment starts at the file's beginning.
+- The last segment is identified when its offset points to itself.
+- Segments may touch or overlap.
+
+### CRC Checksum Calculation:
+The checksum is calculated using the **Cyclic Redundancy Check (CRC)** algorithm. The data in each segment is processed byte-by-byte. Both the file's data and the user-specified CRC polynomial are treated with their most significant bits (MSBs) aligned to the left, following the standard approach for CRC calculations.
