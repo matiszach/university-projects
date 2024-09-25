@@ -2,7 +2,8 @@
 
 ## Description
 
-This project is a dynamically loaded C library which implements the functionality of creating logic circuits with NAND gates.
+This project is a dynamically loaded C library that implements the functionality of creating logic circuits with NAND gates.
+
 The library provides following functions:
 #### `nand_t * nand_new(unsigned n);`
 - Creates a new `NAND` gate with `n` inputs and `1` output.
@@ -48,7 +49,7 @@ The library provides following functions:
   - A pointer to the `NAND` gate connected to the output of `g`.
   - The result is undefined if the parameters are incorrect.
 
-# Usage
+## Usage
 
 To build the library, simply use the provided `Makefile`:
 ```
@@ -63,6 +64,6 @@ And to clean up:
 make clean
 ```
 
-# Warning
+## Warning
 
-The library uses system specific functions and works only on `Linux`.
+The library uses system-specific functionalities and works only on `Linux`.
