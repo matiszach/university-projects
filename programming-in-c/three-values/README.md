@@ -1,4 +1,4 @@
-### Three values
+### Three Values
 
 Imagine a highway, represented as a straight line, along which `n` motels are located. The motels are numbered sequentially from 1 to `n` along the highway. Each motel belongs to a specific motel chain, described by a number ranging from 1 to `n`.
 
@@ -22,7 +22,7 @@ A solution that correctly computes only one of the two required values may recei
 ### Compilation Command:
 
 ```bash
-gcc [options] trz.c -o trz.e
+gcc @opcje trz.c -o trz.e
 ```
 
 ### Input Format:
