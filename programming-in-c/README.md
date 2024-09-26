@@ -2,11 +2,11 @@
 
 ## Description
 
-These are my solutions to the tasks from my university's (advanced) introductory programming course.
-They required use of algorithms and data structures as well as good programming practices in `C/C++`.
+These are my solutions to the tasks from my university's (advanced) Introductory Programming course.
+They required the use of algorithms and data structures as well as good programming practices in `C/C++`.
 
-In order to get the max score the code needed to both be fully correct and have optimal time complexity. The coding style was also graded.
+To get the max score the code needed to be fully correct and have optimal time complexity. The coding style was also graded.
 
 All of my solutions received the maximum possible score.
 
-The attachment of every task (translated to english) is available in `README.md` files in the corresponding folders.
+The attachment of every task (translated into English) is available in the `README.md` file in the corresponding folder.
