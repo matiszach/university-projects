@@ -29,6 +29,8 @@ The checksum is calculated using the **Cyclic Redundancy Check (CRC)** algorithm
 
 The program utilizes a buffer for more efficient data processing.
 
+An array with an answer for every possible byte is preprocessed at the start allowing it to process the data byte by byte instead of bit by bit.
+
 ## Usage
 
 Compile the program.

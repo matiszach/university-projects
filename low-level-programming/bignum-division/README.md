@@ -1,5 +1,9 @@
 # Bignum Division Function
 
+## Warning
+
+The Project uses system-specific functionalities and works only on `Linux`.
+
 ## Description
 
 Assembly implementation of C function for calculating quotient and remainder of bignum division.
