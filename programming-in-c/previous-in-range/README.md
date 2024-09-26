@@ -3,7 +3,7 @@
 
 Your task is to implement a data structure that efficiently handles specific queries regarding a sequence of numbers \(X\). Additionally, the elements of the sequence can be revealed online.
 
-You will work with a sequence defined as \(X = x_0, x_1, \ldots, x_{n-1}\). You are required to implement the following function:
+You will work with a sequence defined as \(X = x_0, x_1, ..., x_{n-1}\). You are required to implement the following function:
 
 ### Function Specification
 
@@ -13,7 +13,7 @@ You will work with a sequence defined as \(X = x_0, x_1, \ldots, x_{n-1}\). You 
 int prevInRange(int i, int lo, int hi);
 ```
 
-This function returns the largest index \(j\) such that \(0 \leq j \leq i\) and \(x_j \in [lo, hi]\). If such an index does not exist, the function should return -1.
+This function returns the largest index \(j\) such that \(0 ≤ j ≤ i\) and \(x_j ∈ [lo, hi]\). If such an index does not exist, the function should return -1.
 
 Formally:
 ```
@@ -35,7 +35,7 @@ Your module should provide the following functions:
    ```cpp
    int prevInRange(int i, int lo, int hi);
    ```
-   Computes the value of `prevInRange(i, [lo, hi])`. You can assume \(0 \leq i < |X|\) and `INT_MIN ≤ lo ≤ hi ≤ INT_MAX`.
+   Computes the value of `prevInRange(i, [lo, hi])`. You can assume \(0 ≤ i < |X|\) and `INT_MIN ≤ lo ≤ hi ≤ INT_MAX`.
 
 3. **Adding Elements:**
    ```cpp
@@ -103,4 +103,3 @@ done(); // Free memory
 ```
 
 This interaction demonstrates initializing the sequence, querying the previous index within a specified range, adding an element, and finally freeing the memory.
-```
