@@ -1,5 +1,9 @@
 # CRC calculator
 
+## Warning
+
+The Project uses system-specific functionalities and works only on `Linux`.
+
 ## Description
 
 This project is an assembly program which calculates the [CRC](https://en.wikipedia.org/wiki/Cyclic_redundancy_check) checksum for the given input file and CRC polynomial.
@@ -42,4 +46,3 @@ Run the program. The program takes 2 arguments; the input file's name and the CR
 - **crc_poly**: A binary string representing the CRC polynomial. The highest-order coefficient is omitted, and the maximum degree of the CRC polynomial is 64 (resulting in a maximum CRC divisor length of 65 bits). 
   - For example, `11010101` represents the polynomial: 𝑥⁸ + 𝑥⁷ + 𝑥⁶ + 𝑥⁴ + 𝑥² + 1.
   - Constant polynomials are considered invalid.
-

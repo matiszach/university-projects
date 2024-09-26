@@ -1,18 +1,18 @@
 
 section .bss
-    poly resb 8 ; wielomian (po zamianie na liczbe)
-    len resb 8 ; dlugosc wielomianu
-    fd resb 8 ; deskryptor pliku
-    argc resb 8 ; liczba argumentow
-    file_name resb 8 ; nazwa pliku
-    divisor resb 8 ; wielomian crc
-    buffer resb 65536 ; bufor (rozmiar dobrany z uwagi na to, że maksymalna dlugosc fragmentu
-                      ; wynosi wlasnie tyle (1 << 16) i nie oplaca sie brac wiekszego poniewaz
-                      ; nie wiadomo jakie nastepne bajty trzeba bedzie wczytac z uwagi na dziury w pliku,
-                      ; a rownoczesnie nie jest on na tyle duzego rozmiaru by istotnie zwiekszac
-                      ; zuzycie pamieci programu, wiec nie ma sensu go pomniejszac bo im wiekszy bufor
-                      ; tym mniej wywolan operacji sys_read czyli tym lepiej)
-    lookup_table resb 2048 ; tablica pamietajaca wyniki liczenia crc dla kazdego mozliwego bajtu
+    poly resb 8 ; polynomial (after conversion to an integer)
+    len resb 8 ; polynomial length
+    fd resb 8 ; file descriptor
+    argc resb 8 ; number of arguemnts
+    file_name resb 8 ; file name
+    divisor resb 8 ; CRC polynomial
+    buffer resb 65536 ; buffer (size chosen because the maximum fragment length
+                      ; is exactly that (1 << 16) and it is not worth taking a larger one because
+                      ; it is not known what next bytes will have to be loaded due to holes in the file,
+                      ; and at the same time it is not large enough to significantly increase
+                      ; program memory usage, so there is no point in reducing it because the larger the buffer
+                      ; the fewer sys_read operation calls, i.e. the better)
+    lookup_table resb 2048 ; array storing the results of the crc calculation for each possible byte
  
 section .text
     global _start
@@ -20,30 +20,30 @@ section .text
 _start:
 
 
-;                      INICJALIZACJA & PREPROCESSING
+;                      INITIALIZATION & PREPROCESSING
 ; [######################################################################]
 
-    ; pobieranie liczby argumentow
+    ; getting the arguments
     mov rdi, [rsp]
     mov [argc], rdi
     
-    ; sprawdzanie czy jest ich dokladnie 3
+    ; checking if there are exactly 3 of them
     cmp qword [argc], 3
     jl .exit
     jg .exit
     
-    ; pobieranie nazwy pliku i ciagu binarnego z argumentow
-    mov rax, [rsp + 16] ; nazwa pliku
+    ; getting file name and binary sequence from arguments
+    mov rax, [rsp + 16] ; file name
     mov [file_name], rax
     
-    mov rax, [rsp + 24] ; ciag binarny
+    mov rax, [rsp + 24] ; binary string
     mov [divisor], rax
     
-    ; obliczanie dlugosci ciagu binarnego i konwersja na liczbe
-    mov rsi, [divisor] ; zapisanie wskaznika na ciag binarny do rdi
-    xor rcx, rcx ; dlugosc ciagu
-    xor r8, r8 ; przekonwertowana liczba
-.len_loop: ; petla wykonuje sie dopoki bajty sa niezerowe i sprawdza czy wszystkie znaki sa poprawne
+    ; calculating the length of the binary string and converting it to a number
+    mov rsi, [divisor] ; store the pointer to the binary string in rsi
+    xor rcx, rcx ; string length
+    xor r8, r8 ; converted number
+.len_loop: ; loop continues as long as bytes are non-zero and checks if all characters are valid
     cmp byte [rsi + rcx], 0
     je .len_done
     shl r8, 1
@@ -57,117 +57,116 @@ _start:
     jmp .len_loop
     
 .len_done:
-    cmp rcx, 0 ; sprawdzamy czy wielomian nie jest staly
+    cmp rcx, 0 ; check if the polynomial is constant
     je .exit
     
-    mov [len], rcx ; zapisujemy dlugosc do len
-    mov [poly], r8 ; zapisujemy przekonwertowana liczbe do poly
+    mov [len], rcx ; store the length in len
+    mov [poly], r8 ; store the converted number in poly
     
-    ; przesuwamy wielomian do lewej strony (przesuwajac go o 64 - jego dlugosc bity)
+    ; shift the polynomial to the left (shifting it by 64 - its length bits)
     mov rcx, 64
     sub rcx, [len]
     mov rax, [poly]
     shl rax, cl
     mov [poly], rax
     
-    ; obliczanie lookup_table aby moc przetwarzac dane bajt po bajcie
-    ; zamiast bit po bicie korzystajac z tego ze dla danego bajtu
-    ; zawsze wynik wychodzi taki sam i mozna zapamietac wyniki dla kazdego
-    ; bajtu na poczatku programu
-    xor r8, r8 ; aktualny bajt
+    ; calculating the lookup table to process data byte by byte
+    ; instead of bit by bit by leveraging the fact that for a given byte
+    ; the result is always the same, and we can store results for each
+    ; byte at the start of the program
+    xor r8, r8 ; current byte
     mov rdi, lookup_table
-.byte_loop: ; petla przechodzaca po kazdym mozliwym bajcie
-    mov r9, r8 ; r9 to aktualny bajt przesuniety w lewo
+.byte_loop: ; loop iterating through every possible byte
+    mov r9, r8 ; r9 is the current byte shifted left
     shl r9, 56
     
-    ; przejscie sie bit po bicie
-    xor rcx, rcx ; aktualny bit bajtu
+    ; iterating through each bit
+    xor rcx, rcx ; current bit of the byte
     dec rcx
 .bit_loop:
     inc rcx
-    mov r10, r9 ; sprawdzamy czy pierwszy bit r9 to 1
+    mov r10, r9 ; check if the first bit of r9 is 1
     shr r10, 63
     cmp r10, 1
     je .msb_one
-    shl r9, 1 ; jesli pierwszy bit = 0 to r9 = (r9 << 1)
+    shl r9, 1 ; if the first bit = 0 then r9 = (r9 << 1)
     jmp .end_check
-.msb_one: ; jesli pierwszy bit = 1 to r9 = (r9 << 1) ^ poly
+.msb_one: ; if the first bit = 1 then r9 = (r9 << 1) ^ poly
     shl r9, 1
     mov r11, [poly]
     xor r9, r11
 .end_check:
     cmp rcx, 7
-    jl .bit_loop ; koniec petli po bitach
+    jl .bit_loop ; end of the bit loop
     
-    mov qword [rdi + r8 * 8], r9 ; ustawiamy lookup_table od aktualnego bajtu na jego wynik
+    mov qword [rdi + r8 * 8], r9 ; set lookup_table for the current byte with its result
     
     inc r8
     cmp r8, 256
-    jl .byte_loop ; koniec petli po bajtach
+    jl .byte_loop ; end of the byte loop
 
 
-;                             OBLICZANIE CRC
+;                             CRC CALCULATION
 ; [######################################################################]
 
-    ; otwieranie pliku
+    ; opening the file
     mov rax, 2 ; sys_open
-    mov rdi, [file_name] ; nazwa pliku
-    xor rsi, rsi ; tryp read-only
+    mov rdi, [file_name] ; file name
+    xor rsi, rsi ; read-only mode
     syscall
-    test rax, rax ; sprawdzanie czy poprawnie otwarty
-    js .exit ; jak nie to blad
+    test rax, rax ; check if successfully opened
+    js .exit ; if not, exit with error
     
-    ; deskryptor pliku
+    ; file descriptor
     mov r8, rax
     
-    ; czytanie z pliku
-    ; petla bedzie czytala dopoki fragment nie wskaze sam na siebie
-    xor r11, r11 ; r11 - tymczasowa zmienna na wczytywane dane
-    xor r12, r12 ; r12 - pozycja aktualnie przetwarzanego bajtu
-    xor r14, r14 ; r14 - poczatek ostatnio rozpatrywanego fragmentu
-    xor r15, r15 ; r15 - wskazuje na aktualna faze czytania (0 - dlugosci, 1 - fragmentu, 2 - przesuniecia)
-    xor r13, r13 ; r13 - wynikowa liczba
+    ; reading from the file
+    ; the loop reads until the fragment points to itself
+    xor r11, r11 ; r11 - temporary variable for the data being read
+    xor r12, r12 ; r12 - position of the currently processed byte
+    xor r14, r14 ; r14 - start of the last considered fragment
+    xor r15, r15 ; r15 - indicates the current phase of reading (0 - length, 1 - fragment, 2 - shift)
+    xor r13, r13 ; r13 - resulting number
 .read_loop:
     cmp r15, 1
-    je .read_data ; r15 = 1 -> czytanie danych
-    jg .read_shift ; r15 = 2 -> czytanie przesuniecia
+    je .read_data ; r15 = 1 -> reading data
+    jg .read_shift ; r15 = 2 -> reading shift
     
-    ; r15 = 0 -> czytanie dlugosci
-    add r12, 2 ; obecna pozycja += 2
-    mov rdx, 2 ; wczytujemy 2 bajty do bufora
+    ; r15 = 0 -> reading length
+    add r12, 2 ; current position += 2
+    mov rdx, 2 ; read 2 bytes into the buffer
     call .read_from_file
     
-    ; r11 oznacza tu dlugosc fragmentu
+    ; r11 here means the length of the fragment
     ; r11 = buffer[0] | (buffer[1] << 8) (little-endian)
     movzx r11, byte [buffer]
     movzx r10, byte [buffer + 1]
     shl r10, 8
     or r11, r10
-    mov r15, 1 ; faza -> 1
-    
+    mov r15, 1 ; phase -> 1
     
     jmp .end_read
 .read_data:
-    add r12, r11 ; obecna pozycja += dlugosc danych
-    mov rdx, r11 ; wczytujemy do bufora r11 bajtow
+    add r12, r11 ; current position += data length
+    mov rdx, r11 ; read r11 bytes into the buffer
     mov r10, r11
     call .read_from_file
     
-    ; petla liczaca wynik bajt po bajcie
-    xor rcx, rcx ; aktualna pozycja
+    ; loop processing the result byte by byte
+    xor rcx, rcx ; current position
     mov r11, r10
 .crc_loop:
     cmp rcx, r11
     jge .end_crc_loop
     
-    ; indeks na ktory trzeba spojrzec w lookup_table
+    ; index to check in lookup_table
     ; idx = (crc ^ (byte << 56)) >> 56
     movzx r9, byte [buffer + rcx]
     shl r9, 56
     mov r10, r13
     xor r10, r9
     shr r10, 56
-    ; liczenie wyniku na podstawie wyniku zapisanego dla bajtu
+    ; calculating the result based on the stored result for the byte
     ; crc = (crc << 8) ^ lookup_table[idx]
     shl r13, 8
     mov rdi, lookup_table
@@ -177,15 +176,15 @@ _start:
     jmp .crc_loop
     
 .end_crc_loop:
-    mov r15, 2 ; faza -> 2
+    mov r15, 2 ; phase -> 2
     jmp .end_read
 
 .read_shift:
-    add r12, 4 ; obecna pozycja += 4
-    mov rdx, 4 ; wczytujemy 4 bajty do bufora
+    add r12, 4 ; current position += 4
+    mov rdx, 4 ; read 4 bytes into the buffer
     call .read_from_file
     
-    ; r11 oznacza tu przesuniecie
+    ; r11 here means the shift
     ; r11 = buffer[0] | (buffer[1] << 8) | (buffer[2] << 16) | (buffer[3] << 24)
     ; (little-endian)
     movzx r11d, byte [buffer]
@@ -199,95 +198,95 @@ _start:
     shl r10d, 24
     add r11d, r10d
     
-    ; jezeli r11 > MAX_INT to zmieniamy znak
-    ; poprzez odjecie 1 i odwrocenie bitow
+    ; if r11 > MAX_INT then change the sign
+    ; by subtracting 1 and inverting the bits
     mov r9, 0x7fffffff
     cmp r11, r9
     jle .not_greater
-    ; przesuniecie jest ujemne
+    ; the shift is negative
     sub r11d, 1
     not r11d
-    sub r12, r11 ; obecna pozycja -= przesuniecie
+    sub r12, r11 ; current position -= shift
     jmp .greater
 .not_greater:
-	; przesuniecie jest dodatnie
-    add r12, r11 ; obecna pozycja += przesuniecie
+	; the shift is positive
+    add r12, r11 ; current position += shift
 .greater:
-    ; przesuwanie aktualnie czytanego bajtu o przesuniecie (lseek)
-    mov rdi, r8 ; deskryptor pliku
-    mov rsi, r12 ; przesuwamy o przesuniecie
-    mov rdx, 0 ; SEEK_SET (wzgledem aktualnej pozycji)
+    ; shift the currently read byte by the shift amount (lseek)
+    mov rdi, r8 ; file descriptor
+    mov rsi, r12 ; apply shift
+    mov rdx, 0 ; SEEK_SET (relative to current position)
     mov rax, 8 ; lseek
     syscall
-    cmp rax, 0 ; sprawdzanie czy sie udalo
+    cmp rax, 0 ; check if successful
     jl .exit
     
-    cmp r12, r14 ; jezeli obecna pozycja jest na poczatku tego aktualnego fragmentu to konczymy petle
+    cmp r12, r14 ; if current position is at the start of this fragment, end the loop
     je .break_read_loop
-    mov r14, r12 ; ostatnia pozycja -> aktualna pozycja
-    mov r15, 0 ; faza -> 0
+    mov r14, r12 ; last position -> current position
+    mov r15, 0 ; phase -> 0
 .end_read:
     jmp .read_loop
     
-.break_read_loop: ; wyjscie z petli
+.break_read_loop: ; exit the loop
 
-;                            WYPISYWANIE DANYCH
+;                            OUTPUTTING DATA
 ; [######################################################################]
 
-    ; zamykanie pliku
+    ; closing the file
     mov rax, 3 ; sys_close
-    mov rdi, [fd] ; deskryptor pliku
+    mov rdi, [fd] ; file descriptor
     syscall
-    test rax, rax ; sprawdzanie czy sie udalo
+    test rax, rax ; check if successful
     js .exit
     
-    ; wypisywanie wyniku bit po bicie
-    mov r9, [len] ; ustawienie r9 na dlugosc wielomianu wejsciowego
+    ; outputting the result bit by bit
+    mov r9, [len] ; set r9 to the length of the input polynomial
 .write_loop:
-    mov r12, r13 ; sprawdzenie czy pierwszy bit = 1
+    mov r12, r13 ; check if the first bit = 1
     mov rcx, 63
     shr r12, cl
     cmp r12, 1
     je .is_one
-    mov byte [buffer], '0' ; wrzucanie odpowiednio '0' i '1' do bufora aby je wypisywac
+    mov byte [buffer], '0' ; insert '0' or '1' into the buffer for output
     jmp .skip
 .is_one:
     mov byte [buffer], '1'
 .skip:
 
-    ; wypisywanie bitu (bajtu)
+    ; outputting a bit (byte)
     mov rsi, buffer
     mov rdx, 1
     call .print_data
     
-    shl r13, 1 ; przesuwanie r13 w lewo aby kolejny bit byl na pierwszej pozycji
+    shl r13, 1 ; shift r13 left so the next bit is in the first position
     dec r9
     cmp r9, 0
-    jg .write_loop ; koniec petli
+    jg .write_loop ; end of loop
     
-    ; wypisanie znaku nowego wiersza
+    ; outputting a newline character
     mov byte [buffer], 10
     mov rsi, buffer
     mov rdx, 1
     call .print_data
     
-    ; zakonczenie programu
+    ; program termination
     mov rdi, 0
     mov rax, 60
     syscall
 
 
-;                                 FUNCKJE
+;                                 FUNCTIONS
 ; [######################################################################]
 
-; program zakonczony bledem
+; program exited with an error
 .exit:
     mov rdi, 1
     mov rax, 60
     syscall
 
 
-; czytanie z pliku do bufora
+; reading from the file into the buffer
 .read_from_file:
     mov rdi, r8
     mov rsi, buffer
@@ -298,7 +297,7 @@ _start:
     ret
 
 
-; wypisywanie danych
+; outputting data
 .print_data:
     mov rdi, 1
     mov rax, 1
@@ -306,4 +305,3 @@ _start:
     test rax, rax
     js .exit
     ret
-
