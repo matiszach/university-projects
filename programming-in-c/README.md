@@ -1,4 +1,4 @@
-# Programming in C
+# Programming in C/C++
 
 ## Description
 
